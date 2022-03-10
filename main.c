@@ -16,7 +16,7 @@ When starting up when the fan is not running (fan status flag == 0), run the inf
 
 const int extendButton = 7;                    // button to extend
 const int retractButton = 8;                   // button to retract
-const int retractLED = 2;		       // indicates system received retract command
+const int retractLED = 2;					   // indicates system received retract command
 const int extendLED = 3;                       // indicates system received extend command       
 
 int motorFlag1 = 0;
@@ -39,8 +39,8 @@ int ERSwitchFlag = 0;                          // switch flag
 
 int hallEffectCounter = 0;                     // counter for hall effect
 
-float solarVoltage;                            // solar voltage value
-float batteryVoltage;                          // battery voltage value
+float solarV;                            // solar voltage value
+float batteryV;                          // battery voltage value
 
 
 
@@ -54,7 +54,7 @@ void setup()                                   // input output
 
 void loop()
 {
-	for()				       // LEDs blinking on startup
+	for()									   // LEDs blinking on startup
 	{
 	digitalWrite(retractLED, HIGH);
 	digitalwrite(extendLED, HIGH);
@@ -70,24 +70,24 @@ void loop()
 	}
 	
 	
-	if(digitalRead(extendButton) == HIGH)  // extendButton is pushed
+	if(digitalRead(extendButton) == HIGH)      // extendButton is pushed
 	{
-		if(ERFlag == 0)                // checks if system is retracted 
+		if(ERFlag == 0)                        // checks if system is retracted 
 		{
 			// run extend module ( contains LED confirmation )
 		}
 		
-		if(ERFlag == 1)                // do nothing if system is already extended
+		if(ERFlag == 1)                        // do nothing if system is already extended
 		{}
 	}
 	
 	
-	if(digitalRead(retractButton) == HIGH) // retractButton is pushed
+	if(digitalRead(retractButton) == HIGH)     // retractButton is pushed
 	{
-		if(ERFlag == 0)                // do nothing if system is already retracted
+		if(ERFlag == 0)                        // do nothing if system is already retracted
 		{}
 	
-		if(ERFlag == 1)                // checks if system is extended
+		if(ERFlag == 1)                        // checks if system is extended
 		{
 			// run retract module (contains LED confirmation)
 		}
@@ -98,23 +98,77 @@ void loop()
 
 void extend()
 {
+	ERFlag = 1;
+/*
+While (0 < motor 1 counter <= 180 (enough pulses for 70 ft) && is within __% of motor 2 counter)
+set motor 1 direction 1 to HIGH
+Else set to LOW (figure out how to do this)
+
+While (0 < motor 2 counter <= 180 (enough pulses for 70 ft) && is within __% of motor 1 counter)
+set motor 1 direction 1 to HIGH
+Else set to LOW (figure out how to do this)
+
+*/
+	inflate();
+	diagnostic();
+	
 }
-
-
-
-void retract()
-{
-}
-
 
 
 void inflate()
 {
+/*
+Set all inflation fans to high
+Set inflation fan status flags to high
+Delay (1000)  //let fans get up to speed
+Run diagnostic module
+Delay (inflation time)
+Set all but 1 inflation fan to LOW
+Set all but the one fan status flag to 0
+Run diagnostic module
+*/
 }
+
+
+void retract()
+{
+/*
+Set ER flag to 0
+Set retract button flag to 0
+Set all deflation fans to high
+Set deflation fan status flags to high
+Delay (1000)  //let fans get up to speed
+Run diagnostic module
+Delay (deflation time)
+Set all fans to LOW
+
+Set motor 1 direction 2 to high
+Delay (100 ms?)
+Set motor 2 direction 2 to high
+When motor 1 counter == 180 (enough pulses for 70 ft), set motor 1 direction 2 to Low
+When motor 2 counter == 180 (enough pulses for 70 ft), set motor 2 direction 2 to Low
+
+Run diagnostic module
+*/
+}
+
+
 
 
 void diagnostic()
 {
+/*
+Check which fans have had a diagnostic flag set to high, 
+compare to how many should be high, set the fan error flag to high if there is a discrepancy.
+Reset all fan diagnostic flags to 0.
+
+If BatteryV > analogReadbatteryvoltage + _arbitrary value_ (set battery error to high)
+//compare battery voltage to value at the last check (before and after an extension/retraction), and if it has discharged a lot, set battery error flag to high.
+BatteryV = analogRead Battery voltage
+
+SolarV = analogRead Solar voltage
+SolarVavg = add solarV into the running average, probably 1000 cycles?
+*/
 }
 
 
