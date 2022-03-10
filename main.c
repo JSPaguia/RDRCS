@@ -16,8 +16,12 @@ When starting up when the fan is not running (fan status flag == 0), run the inf
 
 const int extendButton = 7;                    // button to extend
 const int retractButton = 8;                   // button to retract
-const int retractLED = 2;					   // indicates system received retract command
-const int extendLED = 3;                       // indicates system received extend command       
+const int retractLED = 2;		       // indicates system received retract command
+const int extendLED = 3;                       // indicates system received extend command   
+const int motor1 = 4;
+const int motor2 = 5;
+const int powerSwitch = 6;
+// change these values depending on pin assignments^
 
 int motorFlag1 = 0;
 int motorFlag2 = 0;                            // motor flags
@@ -39,8 +43,8 @@ int ERSwitchFlag = 0;                          // switch flag
 
 int hallEffectCounter = 0;                     // counter for hall effect
 
-float solarV;                            // solar voltage value
-float batteryV;                          // battery voltage value
+float solarV;                                  // solar voltage value
+float batteryV;                                // battery voltage value
 
 
 
@@ -54,7 +58,7 @@ void setup()                                   // input output
 
 void loop()
 {
-	for()									   // LEDs blinking on startup
+	for()				       // LEDs blinking on startup
 	{
 	digitalWrite(retractLED, HIGH);
 	digitalwrite(extendLED, HIGH);
@@ -63,33 +67,33 @@ void loop()
 	digitalWrite(extendLED, LOW);
 	delay(100);
 	
-	//insert ISR here to break standby loop
+	//insert interrupt here to break standby loop
 	
 	
 	
 	}
 	
 	
-	if(digitalRead(extendButton) == HIGH)      // extendButton is pushed
+	if(digitalRead(extendButton) == HIGH) // extendButton is pushed
 	{
-		if(ERFlag == 0)                        // checks if system is retracted 
+		if(ERFlag == 0)               // checks if system is retracted 
 		{
-			// run extend module ( contains LED confirmation )
+			extend();
 		}
 		
-		if(ERFlag == 1)                        // do nothing if system is already extended
+		if(ERFlag == 1)               // do nothing if system is already extended
 		{}
 	}
 	
 	
-	if(digitalRead(retractButton) == HIGH)     // retractButton is pushed
+	if(digitalRead(retractButton) == HIGH)// retractButton is pushed
 	{
-		if(ERFlag == 0)                        // do nothing if system is already retracted
+		if(ERFlag == 0)               // do nothing if system is already retracted
 		{}
 	
-		if(ERFlag == 1)                        // checks if system is extended
+		if(ERFlag == 1)               // checks if system is extended
 		{
-			// run retract module (contains LED confirmation)
+			retract();
 		}
 	}
 	
@@ -108,6 +112,7 @@ While (0 < motor 2 counter <= 180 (enough pulses for 70 ft) && is within __% of 
 set motor 1 direction 1 to HIGH
 Else set to LOW (figure out how to do this)
 
+Have LED confirming that system is extending
 */
 	inflate();
 	diagnostic();
@@ -147,6 +152,8 @@ Delay (100 ms?)
 Set motor 2 direction 2 to high
 When motor 1 counter == 180 (enough pulses for 70 ft), set motor 1 direction 2 to Low
 When motor 2 counter == 180 (enough pulses for 70 ft), set motor 2 direction 2 to Low
+
+Have LED confirming that system is retracting
 
 Run diagnostic module
 */
