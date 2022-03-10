@@ -1,26 +1,14 @@
-/*
-Startup loop:
-Have both LEDs start flashing
-Press one of the buttons to tell it that it is extended
-Press other button to tell it that it is retracted
-whichever LED lights up to indicate that the command was received
-
-Main loop:
-When starting up when the fan is not running (fan status flag == 0), run the inflation module.
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/delay.h>
 
-const int extendButton = 7;                    // button to extend
-const int retractButton = 8;                   // button to retract
-const int retractLED = 2;		       // indicates system received retract command
-const int extendLED = 3;                       // indicates system received extend command   
-const int motor1 = 4;
-const int motor2 = 5;
-const int powerSwitch = 6;
+const int extendButton = x;                    // button to extend
+const int retractButton = x;                   // button to retract
+const int retractLED = x;		       // indicates system received retract command
+const int extendLED = x;                       // indicates system received extend command   
+const int motor1 = x;
+const int motor2 = x;
+const int powerSwitch = x;
 // change these values depending on pin assignments^
 
 int motorFlag1 = 0;
