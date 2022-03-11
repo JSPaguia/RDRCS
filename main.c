@@ -9,11 +9,11 @@ const int extendLED = x;                       // indicates system received exte
 const int motor1 = x;
 const int motor2 = x;
 const int powerSwitch = x;
-const int fan1 = x;
-const int fan2 = x;
-const int fan3 = x;
-const int fan4 = x;
-const int fan5 = x;
+const int fan1 = 1;
+const int fan2 = 4;
+const int fan3 = 5;
+const int fan4 = 6;
+const int fan5 = 7;
 // change these values depending on pin assignments^
 
 int motorFlag1 = 0;
@@ -115,6 +115,23 @@ Have LED confirming that system is extending
 
 void inflate()
 {
+	digitalWrite (1,HIGH);
+	digitalWrite (4,HIGH);
+	digitalWrite (5,HIGH);
+	
+	fanFlag1 = 1;
+	fanFlag2 = 1;
+	fanFlag3 = 1;
+	
+	delay(1000);
+	
+	digitalWrite (4,LOW);
+	digitalWrite (5,LOW);
+	
+	fanFlag2 = 0;
+	fanFlag3 = 0;
+	
+	diagnostic();
 /*
 Set all inflation fans to high
 Set inflation fan status flags to high
@@ -130,6 +147,18 @@ Run diagnostic module
 
 void retract()
 {
+	ERFlag = 0;
+	ERSwitchFlag = 0;
+	
+	digitalWrite (6,HIGH);
+	digitalWrite (7,HIGH);
+	
+	fanFlag4 = 1;
+	fanFlag5 = 1;
+	
+	delay(1000);
+	
+	
 /*
 Set ER flag to 0
 Set retract button flag to 0
