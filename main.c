@@ -9,6 +9,11 @@ const int extendLED = x;                       // indicates system received exte
 const int motor1 = x;
 const int motor2 = x;
 const int powerSwitch = x;
+const int fan1 = x;
+const int fan2 = x;
+const int fan3 = x;
+const int fan4 = x;
+const int fan5 = x;
 // change these values depending on pin assignments^
 
 int motorFlag1 = 0;
