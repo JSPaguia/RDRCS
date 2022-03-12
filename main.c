@@ -158,6 +158,12 @@ void retract()
 	
 	delay(1000);
 	
+	delay(120000); // 2 minutes to deflate inflatable
+	
+	digitalWrite (6,LOW);
+	digitalWrite (7,LOW);
+	
+	
 	
 /*
 Set ER flag to 0
