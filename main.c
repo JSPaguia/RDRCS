@@ -2,18 +2,20 @@
 #include <stdlib.h>
 #include <util/delay.h>
 
-const int extendButton = x;                    // button to extend
-const int retractButton = x;                   // button to retract
-const int retractLED = x;		       // indicates system received retract command
-const int extendLED = x;                       // indicates system received extend command   
-const int motor1 = x;
-const int motor2 = x;
-const int powerSwitch = x;
-const int fan1 = x;
-const int fan2 = x;
-const int fan3 = x;
-const int fan4 = x;
-const int fan5 = x;
+const int extendButton = A5;                    // button to extend
+const int retractButton = A4;                   // button to retract
+const int retractLED = 19;		       // indicates system received retract command
+const int extendLED = 18;                       // indicates system received extend command   
+const int motor1relay1 = 10;
+const int motor1relay2 = 11;
+const int motor2relay1 = 12;
+const int motor2relay1 = 13;
+const int powerSwitch = x;	// Unsure if we need this
+const int fan1 = A2;
+const int fan2 = A3;
+const int fan3 = 7;
+const int fan4 = 8;
+const int fan5 = 9;
 // change these values depending on pin assignments^
 
 int motorFlag1 = 0;
@@ -35,6 +37,9 @@ int ERFlag = 0;                                // extend/retract flag 1 = extend
 int ERSwitchFlag = 0;                          // switch flag
 
 int hallEffectCounter = 0;                     // counter for hall effect
+
+int button1state = 0;
+int button2state = 0;
 
 float solarV;                                  // solar voltage value
 float batteryV;                                // battery voltage value
@@ -115,6 +120,37 @@ Have LED confirming that system is extending
 
 void inflate()
 {
+	button1state = digitalRead(extendbutton);
+	
+	digitalWrite (fan1,HIGH);
+	digitalWrite (fan2,HIGH);
+	digitalWrite (fan3,HIGH);
+	
+	fanFlag1 = 1;
+	fanFlag2 = 1;
+	fanFlag3 = 1;
+	
+	delay(1000);
+	
+	if(button1state == HIGH){
+		digitalWrite(fan1,HIGH);
+		digitalWrite(fan2,LOW);
+		digitalWrite(fan3,LOW);
+		
+		fanFlag2 = 0;
+		fanFlag3 = 0;
+	}
+	else if(button1state == LOW){
+		digitalWrite(fan1,LOW);
+		digitalWrite(fan2,LOW);
+		digitalWrite(fan4,LOW);
+		
+		fanFlag1 = 0;
+		fanFlag2 = 0;
+		fanFlag3 = 0;
+	}
+	
+	diagnostic();
 /*
 Set all inflation fans to high
 Set inflation fan status flags to high
@@ -130,6 +166,40 @@ Run diagnostic module
 
 void retract()
 {
+	ERFlag = 0;
+	ERSwitchFlag = 0;
+	
+	digitalWrite (6,HIGH);
+	digitalWrite (7,HIGH);
+	
+	fanFlag4 = 1;
+	fanFlag5 = 1;
+	
+	delay(1000);
+	
+	if(button2state == HIGH){
+		digitalWrite(fan4,HIGH);
+		digitalWrite(fan5,HIGH);
+		
+		delay(121000);
+		
+		digitalWrite(fan4,LOW);
+		digitalWrite(fan5,LOW);
+		
+		digitalWrite(motor1relay2,HIGH);
+		
+		delay(120000);
+		
+		digitalWrite(motor1relay2,LOW);
+	}
+	else if(button2state == LOW){
+		digitalWrite(fan4,LOW);
+		digitalWrite(fan5,LOW);
+		digitalWrite(motor1relay2,LOW);
+	}
+	
+	diagnostic();
+	
 /*
 Set ER flag to 0
 Set retract button flag to 0
