@@ -41,6 +41,9 @@ int hallEffectCounter = 0;                     // counter for hall effect
 int button1state = 0;
 int button2state = 0;
 
+int motor1Counter = 0;
+int motor2Counter = 0;
+
 float solarV;                                  // solar voltage value
 float batteryV;                                // battery voltage value
 
@@ -64,43 +67,49 @@ void loop()
 	digitalWrite(retractLED, LOW);
 	digitalWrite(extendLED, LOW);
 	delay(100);
+		
+	button1state = digitalRead(extendButton);
+	button2state = digitalRead(retractButton);
 	
 	//insert interrupt here to break standby loop
 	
-	
-	
-	}
-	
-	
-	if(digitalRead(extendButton) == HIGH) // extendButton is pushed
+	if(button1state == 1) // extendButton is pushed
 	{
-		if(ERFlag == 0)               // checks if system is retracted 
-		{
-			extend();
-		}
-		
-		if(ERFlag == 1)               // do nothing if system is already extended
-		{}
+		ERFlag = 1;
+		extend();
 	}
 	
-	
-	if(digitalRead(retractButton) == HIGH)// retractButton is pushed
+	if(button2state == 1)// retractButton is pushed
 	{
-		if(ERFlag == 0)               // do nothing if system is already retracted
-		{}
-	
-		if(ERFlag == 1)               // checks if system is extended
-		{
-			retract();
-		}
+		ERFlag == 0;
+		retract();
 	}
 	
+	if(button1state == 1 && button2state == 1){
+		;
+	}
+	}
 	
 }
+
+// Edge Case: If button is pressed at 100ms delay nothing happens
 
 void extend()
 {
 	ERFlag = 1;
+	
+	for(motor1Counter = 0; motor1Counter<=180; motor1Counter++){
+		digitalWrite(motor1relay1, HIGH);
+	}
+	
+	for(motor2Counter = 0; motor2Counter<=180; motor2Counter++){
+		digitalWrite(motor2relay1, HIGH);
+	}
+	
+	if(motor1Counter == 180 && motor2Counter == 180){
+		digitalWrite(motor1relay1, LOW);
+		digitalWrite(motor2relay1, LOW);
+	}
 /*
 While (0 < motor 1 counter <= 180 (enough pulses for 70 ft) && is within __% of motor 2 counter)
 set motor 1 direction 1 to HIGH
@@ -116,11 +125,12 @@ Have LED confirming that system is extending
 	diagnostic();
 	
 }
+// Does 180 mean 3 minutes and how would we establish the counter?
 
 
 void inflate()
 {
-	button1state = digitalRead(extendbutton);
+	button1state = digitalRead(extendButton);
 	
 	digitalWrite (fan1,HIGH);
 	digitalWrite (fan2,HIGH);
@@ -139,6 +149,17 @@ void inflate()
 		
 		fanFlag2 = 0;
 		fanFlag3 = 0;
+		
+		button1state = digitalRead(extendbutton);
+		if(button1state == LOW){
+			digitalWrite(fan1,LOW);
+			digitalWrite(fan2,LOW);
+			digitalWrite(fan4,LOW);
+		
+			fanFlag1 = 0;
+			fanFlag2 = 0;
+			fanFlag3 = 0;
+		}
 	}
 	else if(button1state == LOW){
 		digitalWrite(fan1,LOW);
@@ -166,6 +187,7 @@ Run diagnostic module
 
 void retract()
 {
+	button2state = digitalRead(retractButton);
 	ERFlag = 0;
 	ERSwitchFlag = 0;
 	
@@ -187,16 +209,21 @@ void retract()
 		digitalWrite(fan5,LOW);
 		
 		digitalWrite(motor1relay2,HIGH);
+		digitalWrite(motor2relay2,HIGH);
 		
 		delay(120000);
 		
-		digitalWrite(motor1relay2,LOW);
+		if(motor1Counter == 180 && motor2Counter == 180){
+			digitalWrite(motor1relay2,LOW);
+			digitalWrite(motor2relay2,LOW);
+		}
+		
 	}
 	else if(button2state == LOW){
 		digitalWrite(fan4,LOW);
 		digitalWrite(fan5,LOW);
 		digitalWrite(motor1relay2,LOW);
-	}
+}
 	
 	diagnostic();
 	
