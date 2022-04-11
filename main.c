@@ -54,7 +54,23 @@ void setup()                                   // input output
 	pinMode(extendButton, INPUT);
 	pinMode(retractButton, INPUT);
 	pinMode(retractLED, OUTPUT);       
-	pinMode(extendLED, OUTPUT);                
+	pinMode(extendLED, OUTPUT);  
+	
+	pinMode (A2, OUTPUT);      //fan 1
+	pinMode (A3, OUTPUT);      //fan 2
+	pinMode (7, OUTPUT);       //fan 3
+	pinMode (8, OUTPUT);       //fan 4
+	pinMode (9, OUTPUT);       //fan 5
+
+	pinMode (10, OUTPUT);      //motor 1 relay output 1 (DRIVE WHEELS)
+	pinMode (11, OUTPUT);      //motor 1 relay output 2 (DRIVE WHEELS)
+	pinMode (12, OUTPUT);      //motor 2 relay output 1 (SPOOL)
+	pinMode (13, OUTPUT);      //motor 2 relay output 2 (SPOOL)
+
+	digitalWrite (10, LOW);    //make sure both relays are off
+	digitalWrite (11, LOW);
+	digitalWrite (12, LOW);
+	digitalWrite (13, LOW);
 }
 
 void loop()
