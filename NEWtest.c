@@ -33,8 +33,8 @@ int buttonstate1 = digitalRead(extendbutton);
 int buttonstate2 = digitalRead(retractbutton);
 int laststate1 = LOW; // Last Button 1 State
 int laststate2 = LOW; // Last Button 2 State
-const int retractLED = 5; // Retract LED
-const int extendLED = 6;  // Extend LED
+const int retractLED = 5; // Retract LED, WHITE
+const int extendLED = 6;  // Extend LED, BLUE
 int LEDstate1 = LOW;  // LED 1 State
 int LEDstate2 = LOW;  // LED 2 Staate
 unsigned long debounceDuration = 50;  // 50 milliseconds
@@ -49,6 +49,10 @@ int FEF = 0;  // Fan Error Flag
 int ERF = 0;  // Extend/Retract Flag, Flag 1 = Extend/Flag 0 = Retract
 int ERSF = 0; // Extend/Retract Switch Flag
 int HECounter = 0;  // Hall Effect Counter
+
+// HALL EFFECT SENSORS
+volatile int HEstate1 = 0;
+volatile int HEstate2 = 0;
 
 float solarV;
 float batteryV;
@@ -80,6 +84,11 @@ void setup() {
   digitalWrite (M1R2, LOW);
   digitalWrite (M2R1, LOW);
   digitalWrite (M2R2, LOW);
+
+  pinMode(2, INPUT_PULLUP); // Hall Effect 1 (Wheels)
+  pinMode(3, INPUT_PULLUP); // Hall Effect 2 (Spool)
+  attachInterrupt(digitalPinToInterrupt(2),halleffect1,CHANGE);
+  attachInterrupt(digitalPinToInterrupt(3),halleffect2,CHANGE);
 }
 
 /*
@@ -130,7 +139,8 @@ void loop() {
  
 void extend(){
   ERF = 1;
-
+  // halleffect1();
+  // halleffect2();
   for(M1C = 0; M1C <= 180; M1C++){
     digitalWrite(M1R1, HIGH);
   }
@@ -184,6 +194,7 @@ void inflate(){
   }
 
   diagnostic();
+  loop();
 }
 
 /*
@@ -230,6 +241,7 @@ void retract(){
   }
 
   diagnostic();
+  loop();
 }
 
 /*
@@ -238,4 +250,32 @@ void retract(){
  
 void diagnostic(){
   
+}
+
+/*
+---------------------------------------------------------------------------------
+*/
+
+void halleffect1(){
+  for(M1C = 0; M1C <= 180; M1C++){
+    digitalWrite(M1R1, HIGH);
+  }
+  if(M1C == 180){
+    M1C = 0;
+    digitalWrite(M1R1, LOW);
+  }
+}
+
+/*
+---------------------------------------------------------------------------------
+*/
+
+void halleffect2(){
+  for(M2C = 0; M2C <= 180; M2C++){
+    digitalWrite(M2R1, HIGH);
+  }
+  if(M2C == 180){
+    M2C = 0;
+    digitalWrite(M2R1, LOW);
+  }
 }
