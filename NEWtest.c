@@ -33,8 +33,8 @@ int buttonstate1 = digitalRead(extendbutton);
 int buttonstate2 = digitalRead(retractbutton);
 int laststate1 = LOW; // Last Button 1 State
 int laststate2 = LOW; // Last Button 2 State
-const int retractLED = 5; // Retract LED, WHITE
-const int extendLED = 6;  // Extend LED, BLUE
+const int retractLED = 6;           // indicates system received retract command
+const int extendLED = 5; 
 int LEDstate1 = LOW;  // LED 1 State
 int LEDstate2 = LOW;  // LED 2 Staate
 unsigned long debounceDuration = 50;  // 50 milliseconds
@@ -63,8 +63,10 @@ float batteryV;
  
 void setup() {
   // put your setup code here, to run once:
-  pinMode (extendbutton, INPUT);
-  pinMode (retractbutton, INPUT);
+  Serial.begin(9600);
+  Serial.println("test");
+  pinMode (extendbutton, INPUT_PULLUP);
+  pinMode (retractbutton, INPUT_PULLUP);
 
   pinMode(extendLED, OUTPUT);
   pinMode(retractLED, OUTPUT);
@@ -87,8 +89,6 @@ void setup() {
 
   pinMode(2, INPUT_PULLUP); // Hall Effect 1 (Wheels)
   pinMode(3, INPUT_PULLUP); // Hall Effect 2 (Spool)
-  attachInterrupt(digitalPinToInterrupt(2),halleffect1,CHANGE);
-  attachInterrupt(digitalPinToInterrupt(3),halleffect2,CHANGE);
 }
 
 /*
@@ -106,11 +106,11 @@ void loop() {
       if(buttonstate1 == LOW){
         if(LEDstate1 == HIGH){
           LEDstate1 = LOW;
+          extend();
         } else{
           LEDstate1 = HIGH;
         }
         digitalWrite(extendLED, LEDstate1);
-        extend();
       }
     }
   }
@@ -123,11 +123,11 @@ void loop() {
       if(buttonstate2 == LOW){
         if(LEDstate2 == HIGH){
           LEDstate2 = LOW;
+          retract();
         } else{
           LEDstate2 = HIGH;
         }
         digitalWrite(retractLED, LEDstate2);
-        retract();
       }
     }
   }
@@ -138,24 +138,14 @@ void loop() {
 */
  
 void extend(){
-  ERF = 1;
-  // halleffect1();
-  // halleffect2();
-  for(M1C = 0; M1C <= 180; M1C++){
-    digitalWrite(M1R1, HIGH);
-  }
-
-  for(M2C = 0; M2C <= 180; M2C++){
-    digitalWrite(M2R1, HIGH);
-  }
-
-  if(M1C == 180 && M2C == 180){
-    digitalWrite(M1R1, LOW);
-    digitalWrite(M2R1, LOW);
-  }
+  digitalWrite(M1R2, HIGH);
+  digitalWrite(M2R2, HIGH);
+  delay(10000);
+  digitalWrite(M1R2, LOW);
+  digitalWrite(M2R2, LOW);
+  delay(1000);
 
   inflate();
-  diagnostic();
 }
 
 /*
@@ -163,38 +153,17 @@ void extend(){
 */
 
 void inflate(){
-  buttonstate1 = digitalRead(extendbutton);
-  
   digitalWrite(fan1, HIGH);
   digitalWrite(fan3, HIGH);
   digitalWrite(fan5, HIGH);
+    
+  delay(10000);
 
-  FF1 = 0;
-  FF3 = 0;
-  FF5 = 0;
+  digitalWrite(fan1, LOW);
+  digitalWrite(fan3, LOW);
+  digitalWrite(fan5, LOW);
 
-  delay(1000);
-
-  if(buttonstate1 == HIGH){
-    digitalWrite(fan1, HIGH);
-    digitalWrite(fan3, LOW);
-    digitalWrite(fan5, LOW);
-
-    FF3 = 0;
-    FF5 = 0;
-  }
-  else if(buttonstate1 == LOW){
-    digitalWrite(fan1, LOW);
-    digitalWrite(fan3, LOW);
-    digitalWrite(fan5, LOW);
-
-    FF1 = 0;
-    FF3 = 0;
-    FF5 = 0;
-  }
-
-  diagnostic();
-  loop();
+  delay(10000);
 }
 
 /*
@@ -202,80 +171,17 @@ void inflate(){
 */
 
 void retract(){
-  buttonstate2 = digitalRead(retractbutton);
-  ERF = 0;
-  ERSF = 0;
-
-  digitalWrite(A3, HIGH);
-  digitalWrite(8, HIGH);
-
-  FF2 = 1;
-  FF4 = 1;
+  digitalWrite(fan2, HIGH);
+  digitalWrite(fan4, HIGH);
+    
+  delay(10000);
+  
+  digitalWrite(fan2, LOW);  
+  digitalWrite(fan4, LOW);
 
   delay(1000);
-
-  if(buttonstate2 == HIGH){
-    digitalWrite(fan2, HIGH);
-    digitalWrite(fan4, HIGH);
-
-    delay(121000);
-
-    digitalWrite(fan2, LOW);
-    digitalWrite(fan4, LOW);
-
-    digitalWrite(M1R2, HIGH);
-    digitalWrite(M2R2, HIGH);
-
-    delay(120000);
-
-    if(M1C == 180 && M2C == 180){
-      digitalWrite(M1R2, LOW);
-      digitalWrite(M2R2, LOW);
-    }
-  }
-  else if(buttonstate2 == LOW){
-    digitalWrite(fan2, LOW);
-    digitalWrite(fan4, LOW);
-    digitalWrite(M1R2, LOW);
-    digitalWrite(M2R2, LOW);
-  }
-
-  diagnostic();
-  loop();
 }
 
 /*
 ---------------------------------------------------------------------------------
 */
- 
-void diagnostic(){
-  
-}
-
-/*
----------------------------------------------------------------------------------
-*/
-
-void halleffect1(){
-  for(M1C = 0; M1C <= 180; M1C++){
-    digitalWrite(M1R1, HIGH);
-  }
-  if(M1C == 180){
-    M1C = 0;
-    digitalWrite(M1R1, LOW);
-  }
-}
-
-/*
----------------------------------------------------------------------------------
-*/
-
-void halleffect2(){
-  for(M2C = 0; M2C <= 180; M2C++){
-    digitalWrite(M2R1, HIGH);
-  }
-  if(M2C == 180){
-    M2C = 0;
-    digitalWrite(M2R1, LOW);
-  }
-}
