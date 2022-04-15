@@ -89,6 +89,8 @@ void setup() {
 
   pinMode(2, INPUT_PULLUP); // Hall Effect 1 (Wheels)
   pinMode(3, INPUT_PULLUP); // Hall Effect 2 (Spool)
+  // attachInterrupt(digitalPinToInterrupt(2), halleffect1, CHANGE);
+  // attachInterrupt(digitalPinToInterrupt(3), halleffect2, CHANGE);
 }
 
 /*
@@ -153,17 +155,18 @@ void extend(){
 */
 
 void inflate(){
+  
   digitalWrite(fan1, HIGH);
   digitalWrite(fan3, HIGH);
   digitalWrite(fan5, HIGH);
     
   delay(10000);
 
-  digitalWrite(fan1, LOW);
   digitalWrite(fan3, LOW);
   digitalWrite(fan5, LOW);
 
-  delay(10000);
+  delay(100);
+
 }
 
 /*
@@ -171,17 +174,77 @@ void inflate(){
 */
 
 void retract(){
+  ERF = 0;
+  ERSF = 0;
+  
   digitalWrite(fan2, HIGH);
   digitalWrite(fan4, HIGH);
+
+  FF2 = 1;
+  FF4 = 1;
     
-  delay(10000);
+  delay(121000);
   
   digitalWrite(fan2, LOW);  
   digitalWrite(fan4, LOW);
+  
+  delay(100);
 
-  delay(1000);
+  digitalWrite(M1R1, HIGH);
+  digitalWrite(M2R1, HIGH);
+
+  delay(120000);
+
+  digitalWrite(M1R1, LOW);
+  digitalWrite(M2R1, LOW);
+
+  delay(100);
 }
 
 /*
 ---------------------------------------------------------------------------------
 */
+
+void halleffect1(){
+  for(M1C = 0; M1C <= 180; M1C++){
+    digitalWrite(M1R1, HIGH);
+  }
+  if(M1C == 180){
+    M1C = 0;
+    digitalWrite(M1R1, LOW);
+  }
+}
+
+/*
+---------------------------------------------------------------------------------
+*/
+
+void halleffect2(){
+  for(M2C = 0; M2C <= 180; M2C++){
+    digitalWrite(M2R1, HIGH);
+  }
+  if(M2C == 180){
+    M2C = 0;
+    digitalWrite(M2R1, LOW);
+  }
+}
+
+/*
+---------------------------------------------------------------------------------
+*/
+
+void Night(){
+  // if(solarV < ?){
+  digitalWrite(fan1, LOW);
+}
+
+/*
+---------------------------------------------------------------------------------
+*/
+
+void diagnotic(){
+  // solarV = analogRead(A1);
+  // batteryV = analogRead(A0);
+
+  // Serial.println(batteryV);
+}
