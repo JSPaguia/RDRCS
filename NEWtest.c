@@ -77,12 +77,12 @@ void setup() {
   pinMode (fan4, OUTPUT);      
   pinMode (fan5, OUTPUT);     
 
-  pinMode (M1R1, OUTPUT);      //motor 1 relay output 1 (DRIVE WHEELS)
-  pinMode (M1R2, OUTPUT);      //motor 1 relay output 2 (DRIVE WHEELS)
-  pinMode (M2R1, OUTPUT);      //motor 2 relay output 1 (SPOOL)
-  pinMode (M2R2, OUTPUT);      //motor 2 relay output 2 (SPOOL)
+  pinMode (M1R1, OUTPUT);      // motor 1 relay output 1 (DRIVE WHEELS)
+  pinMode (M1R2, OUTPUT);      // motor 1 relay output 2 (DRIVE WHEELS)
+  pinMode (M2R1, OUTPUT);      // motor 2 relay output 1 (SPOOL)
+  pinMode (M2R2, OUTPUT);      // motor 2 relay output 2 (SPOOL)
 
-  digitalWrite (M1R1, LOW);    //make sure both relays are off
+  digitalWrite (M1R1, LOW);    // Makes sure both relays are off
   digitalWrite (M1R2, LOW);
   digitalWrite (M2R1, LOW);
   digitalWrite (M2R2, LOW);
@@ -91,6 +91,9 @@ void setup() {
   pinMode(3, INPUT_PULLUP); // Hall Effect 2 (Spool)
   // attachInterrupt(digitalPinToInterrupt(2), halleffect1, CHANGE);
   // attachInterrupt(digitalPinToInterrupt(3), halleffect2, CHANGE);
+
+  pinMode(A0, INPUT); // Battery Voltage Divider
+  pinMode(A1, INPUT); // Solar Panel Voltage Divider
 }
 
 /*
@@ -142,11 +145,19 @@ void loop() {
 void extend(){
   digitalWrite(M1R2, HIGH);
   digitalWrite(M2R2, HIGH);
-  delay(10000);
-  digitalWrite(M1R2, LOW);
-  digitalWrite(M2R2, LOW);
-  delay(1000);
 
+  halleffect1();
+  halleffect2();
+
+  if(M1C == 180){
+    digitalWrite(M1R1, LOW);
+    digitalWrite(M1R2, LOW);
+  }
+  if(M2C == 180){
+    digitalWrite(M2R1, LOW);
+    digitalWrite(M2R2, LOW);
+  }
+  
   inflate();
 }
 
@@ -167,6 +178,7 @@ void inflate(){
 
   delay(100);
 
+  Night();
 }
 
 /*
@@ -193,12 +205,14 @@ void retract(){
   digitalWrite(M1R1, HIGH);
   digitalWrite(M2R1, HIGH);
 
-  delay(120000);
-
-  digitalWrite(M1R1, LOW);
-  digitalWrite(M2R1, LOW);
-
-  delay(100);
+  if(M1C == 180){
+    digitalWrite(M1R1, LOW);
+    digitalWrite(M1R2, LOW);
+  }
+  if(M2C == 180){
+    digitalWrite(M2R1, LOW);
+    digitalWrite(M2R2, LOW);
+  }
 }
 
 /*
@@ -206,13 +220,7 @@ void retract(){
 */
 
 void halleffect1(){
-  for(M1C = 0; M1C <= 180; M1C++){
-    digitalWrite(M1R1, HIGH);
-  }
-  if(M1C == 180){
-    M1C = 0;
-    digitalWrite(M1R1, LOW);
-  }
+  M1C++;
 }
 
 /*
@@ -220,13 +228,7 @@ void halleffect1(){
 */
 
 void halleffect2(){
-  for(M2C = 0; M2C <= 180; M2C++){
-    digitalWrite(M2R1, HIGH);
-  }
-  if(M2C == 180){
-    M2C = 0;
-    digitalWrite(M2R1, LOW);
-  }
+  M2C++;
 }
 
 /*
@@ -234,8 +236,10 @@ void halleffect2(){
 */
 
 void Night(){
-  // if(solarV < ?){
-  digitalWrite(fan1, LOW);
+  solarV = analogRead(A1);
+  if(solarV < 5){
+    digitalWrite(fan1, LOW);
+  }
 }
 
 /*
@@ -243,8 +247,9 @@ void Night(){
 */
 
 void diagnotic(){
-  // solarV = analogRead(A1);
-  // batteryV = analogRead(A0);
+  batteryV = analogRead(A0);
+  solarV = analogRead(A1);
 
-  // Serial.println(batteryV);
+  Serial.println(batteryV);
+  Serial.println(solarV);
 }
